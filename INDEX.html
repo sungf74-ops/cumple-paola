@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Para Ti 💙</title>
 
+    <!-- Icono de la pestaña -->
+    <link rel="icon" type="image/jpeg" href="icon.jpg">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
@@ -28,11 +31,27 @@
 
         header {
             padding: 40px 20px;
+            position: relative;
+            z-index: 10; /* Asegura que el título esté por encima de la lluvia */
         }
 
         h1 {
             font-size: 40px;
             text-shadow: 0 0 10px #fff, 0 0 20px #4da6ff, 0 0 30px #4da6ff; /* Efecto Glow */
+        }
+
+        /* --- MEJORA 1: Barra de desplazamiento bonita --- */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #4da6ff;
+            border-radius: 10px;
+            border: 3px solid transparent;
+            background-clip: content-box;
         }
 
         /* Animación de entrada suave para las tarjetas */
@@ -42,15 +61,19 @@
         }
 
         .card {
-            background: white;
+            background: rgba(240, 248, 255, 0.85); /* MEJORA 2: Efecto Cristal (Semitransparente) */
+            backdrop-filter: blur(8px); /* Difumina el fondo detrás */
             margin: 20px auto;
             padding: 20px;
             max-width: 500px;
             width: 90%; /* Mejor ajuste en móviles */
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 2px solid #4da6ff; /* Borde sólido azul brillante */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra más profunda y elegante */
             color: #033e6b;
             animation: slideInUp 0.8s ease-out forwards; /* Aplicar animación */
+            position: relative;
+            z-index: 10; /* Texto por encima de la lluvia */
         }
 
         button {
@@ -60,10 +83,14 @@
             border-radius: 10px;
             color: white;
             cursor: pointer;
+            transition: all 0.3s ease; /* MEJORA 3: Suaviza la animación al pasar el mouse */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         button:hover {
             background-color: #3399ff;
+            transform: translateY(-3px); /* El botón "flota" hacia arriba */
+            box-shadow: 0 7px 15px rgba(77, 166, 255, 0.4); /* Resplandor al pasar el mouse */
         }
 
         .hidden {
@@ -81,6 +108,7 @@
             top: -10px;
             font-size: 20px;
             animation: fall linear infinite;
+            z-index: 1; /* Lluvia al fondo (detrás de todo) */
         }
 
         @keyframes fall {
@@ -121,7 +149,7 @@
         .flip-card-front, .flip-card-back {
             width: 100%;
             backface-visibility: hidden; /* Oculta la cara trasera al girar */
-            border-radius: 2px;
+            border-radius: 15px; /* Bordes redondeados en la tarjeta Polaroid */
             /* Estilo Polaroid movido aquí */
             border: 12px solid white;
             border-bottom: 50px solid white;
@@ -139,6 +167,7 @@
             border: none;
             box-shadow: none;
             margin: 0;
+            border-radius: 10px; /* Bordes redondeados en la foto misma */
         }
 
         .flip-card-back {
@@ -346,6 +375,13 @@
             outline: none;
             text-align: center;
             color: #033e6b;
+            transition: 0.3s; /* Animación suave al escribir */
+        }
+
+        /* MEJORA 4: Brillo al escribir */
+        .note-input:focus {
+            border-color: #4da6ff;
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.3); /* Brillo azul */
         }
 
         /* Cursor parpadeante al final de la frase */
@@ -458,26 +494,168 @@
             border-radius: 15px 0 15px 15px; /* Burbuja invertida */
             text-align: left; /* El texto dentro de la burbuja sigue a la izquierda */
         }
+
+        /* --- DECORACIONES: Stickers y GIFs Flotantes --- */
+        .sticker {
+            position: fixed; /* Se quedan pegados a la pantalla */
+            z-index: 5;      /* Por encima del fondo pero debajo de los textos importantes */
+            pointer-events: none; /* ¡Importante! Permite hacer clic a través de ellos */
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); /* Un brillo blanco para que resalten */
+        }
+
+        .sticker-izq {
+            bottom: 10px;
+            left: 10px;
+            width: 120px; /* Tamaño del personaje */
+            animation: flotar 3s ease-in-out infinite;
+        }
+
+        .sticker-der {
+            top: 80px;
+            right: 10px;
+            width: 90px;
+            opacity: 0.8;
+        }
+
+        @keyframes flotar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); } /* Sube y baja suavemente */
+        }
+
+        /* --- Controles de Video Personalizados --- */
+        .custom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+            padding: 10px;
+            border-radius: 0 0 10px 10px; /* Redondeado solo abajo */
+            margin-bottom: 15px;
+            border: 2px solid #4da6ff;
+            border-top: none; /* Unir visualmente con el video */
+        }
+        
+        .custom-controls button {
+            padding: 5px 10px; /* Botones más compactos */
+            font-size: 1rem;
+        }
+
+        .custom-controls input[type=range] {
+            flex-grow: 1; /* La barra ocupa todo el espacio */
+            accent-color: #4da6ff; /* ¡ESTO cambia el color de la barra a AZUL! */
+            cursor: pointer;
+            height: 5px;
+        }
+
+        /* --- Pantalla de Bienvenida (Intro) --- */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #000428, #004e92); /* Degradado Azul Profundo */
+            z-index: 10000; /* Por encima de todo */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out; /* Se desvanece suavemente */
+        }
+
+        /* --- Animación del Título de Bienvenida --- */
+        #welcome-screen h1 {
+            animation: entradaTitulo 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+
+        @keyframes entradaTitulo {
+            0% { transform: scale(0) translateY(-100px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* --- Emoji Saltarín --- */
+        .emoji-saltarin {
+            font-size: 3rem;
+            margin-top: 15px;
+            animation: salto 0.6s infinite alternate ease-in-out;
+        }
+
+        @keyframes salto {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
+        }
+
+        #btn-abrir {
+            font-size: 1.5rem;
+            padding: 15px 40px;
+            background-color: #ffffff; /* Botón blanco para resaltar en el azul */
+            color: #004e92; /* Texto azul */
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Dancing Script', cursive;
+            animation: latido 1.2s infinite; /* Late como un corazón */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Resplandor blanco */
+            margin-top: 20px;
+        }
     </style>
 </head>
 
 <body>
 
+<!-- PANTALLA DE BIENVENIDA -->
+<div id="welcome-screen">
+    
+    <h1 style="color: white; text-shadow: 0 0 10px #fff;">🎁 Tienes una sorpresa</h1>
+    <p style="color: #ddd;"><span style="color: #ffeb3b; font-weight: bold; font-size: 1.3rem;">Tu amors</span> tiene un regalo para ti</p>
+    <div class="emoji-saltarin">👇</div>
+    <button id="btn-abrir" onclick="abrirRegalo()">Abrir Regalo ✨</button>
+</div>
+
 <header>
-    <h1>Feliz Cumpleaños Mi Amor 💙🎂</h1>
+    <h1>Feliz Cumpleaños Pau Mi Amors 💙🎂</h1>
     <p id="frase-diaria">Cargando mensaje de amor...</p>
 </header>
+
+<!-- STICKERS DECORATIVOS -->
+<!-- Pochacco bailando o saludando en la esquina inferior izquierda -->
+<img src="mi_sticker_1.gif" class="sticker sticker-izq" alt="Pochacco">
+<!-- Corazones o brillos en la esquina superior derecha -->
+<img src="mi_sticker_2.gif" class="sticker sticker-der" alt="Decoración">
 
 <div class="card">
     <h2>💌 Para Ti</h2>
     <p>
-        Aunque la distancia nos separe, mi amor por ti crece cada día.<br>
-        Eres mi pensamiento constante y mi felicidad más bonita 💙
+        Hay noches donde el silencio pesa más,
+y tu ausencia se siente en cada lugar,
+quisiera tenerte aquí, poderte abrazar,
+pero el destino nos quiso separar.
+
+Y aun así… no dejo de pensarte,
+porque en tu forma de ser hay algo tan puro,
+eres calma en medio del caos,
+mi lugar seguro en este mundo oscuro.
+
+Paola, tienes un alma tan hermosa,
+de esas que no se encuentran dos veces,
+con tu dulzura curas mis heridas,
+y haces que crea en lo imposible.
+
+Aunque estemos a kilómetros de distancia,
+mi corazón siempre sabe dónde estás,
+porque no hay mapa que mida lo que siento,
+ni frontera que te pueda alejar.
+
+Y si un día el tiempo nos junta por fin,
+prometo no soltarte jamás,
+porque todo este amor que guardé en silencio…
+lo quiero contigo vivir de verdad.
     </p>
 </div>
 
 <div class="card">
-    <h2>⏳ Nuestro Tiempo</h2>
+    <h2>⏳ Nuestro Tiempo Juntos</h2>
+    <h3>Espero que nunca se acabe</h3>
     <p id="contador"></p>
 </div>
 
@@ -486,7 +664,7 @@
     <h2>💌 Nuestras Cartas Especiales</h2>
     <p>Un rincón sagrado para nuestros sentimientos escritos...</p>
 
-    <button class="accordion">🌹 Tus Cartas para Mí</button>
+    <button class="accordion">🌹 Cartas de pau mi Amors </button>
     <div class="panel">
         <p>Aquí guardo con amor lo que me escribiste:</p>
         <div id="container-ella">
@@ -506,7 +684,7 @@
         </div>
     </div>
 
-    <button class="accordion">💙 Mis Cartas para Ti</button>
+    <button class="accordion">💙 Cartas de Miki</button>
     <div class="panel">
         <p>Mis sentimientos plasmados en papel para ti:</p>
         <div id="container-el">
@@ -532,22 +710,26 @@
     <h2>💬 Mensajes Favoritos</h2>
     <p>Esas palabras tuyas que me alegran el día... 📱</p>
     
-    <h3 style="text-align: left; margin-left: 10px; color: #033e6b;">🌹 Mensajes de Paola</h3>
-    <div id="whatsapp-container-paola" class="chat-section">
-        <!-- Mensajes de Paola -->
-    </div>
-    <div class="upload-container">
-        <textarea id="nuevo-mensaje-paola" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Paola dijo..."></textarea>
-        <button class="custom-file-upload" onclick="agregarMensajeTexto('paola')">➕ Guardar (Paola)</button>
+    <button class="accordion">🌹 Mensajes de Paola</button>
+    <div class="panel">
+        <div id="whatsapp-container-paola" class="chat-section">
+            <!-- Mensajes de Paola -->
+        </div>
+        <div class="upload-container">
+            <textarea id="nuevo-mensaje-paola" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Paola dijo..."></textarea>
+            <button class="custom-file-upload" onclick="agregarMensajeTexto('paola')">➕ Guardar (Paola)</button>
+        </div>
     </div>
 
-    <h3 style="text-align: left; margin-left: 10px; color: #033e6b; margin-top: 30px;">💙 Mensajes de Mike</h3>
-    <div id="whatsapp-container-mike" class="chat-section">
-        <!-- Mensajes de Mike -->
-    </div>
-    <div class="upload-container">
-        <textarea id="nuevo-mensaje-mike" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Mike dijo..."></textarea>
-        <button class="custom-file-upload" onclick="agregarMensajeTexto('mike')">➕ Guardar (Mike)</button>
+    <button class="accordion">💙 Mensajes de Mike</button>
+    <div class="panel">
+        <div id="whatsapp-container-mike" class="chat-section">
+            <!-- Mensajes de Mike -->
+        </div>
+        <div class="upload-container">
+            <textarea id="nuevo-mensaje-mike" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Mike dijo..."></textarea>
+            <button class="custom-file-upload" onclick="agregarMensajeTexto('mike')">➕ Guardar (Mike)</button>
+        </div>
     </div>
 </div>
 
@@ -555,24 +737,38 @@
     <h2>🔒 Mensaje Secreto</h2>
     <button onclick="mostrarMensaje()">Haz clic aquí 💙</button>
     <p id="mensaje" class="hidden">
-        Eres lo mejor que me ha pasado en la vida.
-        Te amo muchísimo 💙🐶
+        Si algún día dudas de mi amor, recuerda esto: incluso en silencio y a distancia… siempre te elijo a ti.💙
     </p>
 </div>
 
 <div class="card">
     <h2>🎵 Música</h2>
+    <p>Nuestra canción especial 🎬</p>
+    <video id="miVideo" width="100%" height="auto" style="border-radius: 10px 10px 0 0; margin-bottom: 0; max-height: 300px; background-color: black; display: block;">
+        <source src="video.mp4" type="video/mp4">
+        Tu navegador no soporta la reproducción de video.
+    </video>
+    <div class="custom-controls">
+        <button id="vidBtn" onclick="playPauseVideo()">▶️</button>
+        <input type="range" id="vidBar" value="0" min="0" max="100" oninput="seekVideo()" onchange="seekVideo()">
+        <button id="muteBtn" onclick="muteVideo()">🔊</button>
+    </div>
     <button id="btnMusica" onclick="toggleMusica()">Reproducir Música ▶️</button>
 </div>
 
 <!-- Música -->
-<audio id="musica" loop>
-    <source src="musica.mp3" type="audio/mpeg">
+<audio id="musica" loop autoplay>
+    <source src="mi_cancion.mp3" type="audio/mpeg">
 </audio>
 
 <!-- Efecto de sonido click -->
 <audio id="clickSound">
     <source src="click.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Efecto de sonido al girar carta -->
+<audio id="flipSound">
+    <source src="flip.mp3" type="audio/mpeg">
 </audio>
 
 <!-- Botón Volver Arriba -->
@@ -588,6 +784,39 @@
 <script>
     const musica = document.getElementById("musica");
     const btnMusica = document.getElementById("btnMusica");
+
+    // --- FUNCIÓN PARA ABRIR EL REGALO ---
+    function abrirRegalo() {
+        const pantalla = document.getElementById('welcome-screen');
+        
+        // 1. Desvanecer la pantalla negra
+        pantalla.style.opacity = 0;
+        
+        // --- LANZAR CONFETI INMEDIATAMENTE ---
+        // Usamos zIndex alto (10001) para que se vea ENCIMA de la pantalla negra
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10001 };
+        var random = function(min, max) { return Math.random() * (max - min) + min; };
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+        
+        // 2. Reproducir música (ahora sí funcionará 100% porque hubo un clic)
+        musica.volume = 0.5; // Volumen suave (50%)
+        musica.play().then(() => {
+            btnMusica.innerText = "Pausar Música ⏸️";
+        }).catch(e => console.log("Error audio:", e));
+
+        // 3. Quitar la pantalla del HTML después de 1 segundo (tiempo de la animación)
+        setTimeout(() => {
+            pantalla.style.display = 'none';
+        }, 1000);
+    }
 
     // --- Frases Aleatorias ---
     const frasesDeAmor = [
@@ -675,11 +904,15 @@
     setInterval(actualizarContador, 1000);
     actualizarContador();
 
-    // Corazones cayendo
+    // --- LLUVIA DE PALABRAS Y CORAZONES ---
+    // Aquí ponemos tus palabras graciosas
+    const palabrasLluvia = ["Amors 💙", "Patito 🐣", "Princesa 👑", "Osea jelou 💅", "Amiguis 💅", "💙", "✨"];
+
     function crearCorazon() {
         const heart = document.createElement("div");
         heart.classList.add("heart");
-        heart.innerText = "💙";
+        // Elegir una palabra o emoji al azar de la lista
+        heart.innerText = palabrasLluvia[Math.floor(Math.random() * palabrasLluvia.length)];
         heart.style.left = Math.random() * 100 + "vw";
         heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
         document.body.appendChild(heart);
@@ -814,6 +1047,15 @@
             downloadBtn.href = imgSrc;
         });
 
+        // Sonido al pasar el mouse (girar) para cartas NUEVAS
+        flipContainer.addEventListener("mouseenter", function() {
+            const audio = document.getElementById("flipSound");
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => {});
+            }
+        });
+
         wrapper.appendChild(flipContainer);
 
         // Si pasamos 'storageKey' e 'index', significa que es borrable (no es estática)
@@ -933,6 +1175,16 @@
         }
     });
 
+    // Agregar sonido a las cartas que ya existen en el HTML (Estáticas)
+    document.querySelectorAll(".flip-card").forEach(card => {
+        card.addEventListener("mouseenter", () => {
+            if (flipSoundElement) {
+                flipSoundElement.currentTime = 0;
+                flipSoundElement.play().catch(e => {});
+            }
+        });
+    });
+
     // --- Lógica del Botón Volver Arriba ---
     const btnTop = document.getElementById("btnTop");
 
@@ -949,7 +1201,52 @@
         window.scrollTo({top: 0, behavior: 'smooth'}); // Desplazamiento suave
     }
 
+    // --- Lógica del Reproductor de Video Personalizado ---
+    const miVideo = document.getElementById("miVideo");
+    const vidBtn = document.getElementById("vidBtn");
+    const vidBar = document.getElementById("vidBar");
+    const muteBtn = document.getElementById("muteBtn");
+
+    miVideo.addEventListener("timeupdate", function() {
+        // Actualizar la barra de progreso mientras avanza el video
+        var value = (100 / miVideo.duration) * miVideo.currentTime;
+        vidBar.value = value;
+    });
+
+    miVideo.addEventListener("ended", function() {
+        vidBtn.innerText = "▶️"; // Volver a poner Play al terminar
+    });
+
+    function playPauseVideo() {
+        if (miVideo.paused) {
+            miVideo.play();
+            vidBtn.innerText = "⏸️";
+        } else {
+            miVideo.pause();
+            vidBtn.innerText = "▶️";
+        }
+    }
+
+    function seekVideo() {
+        // Mover el video cuando tocas la barra
+        var time = miVideo.duration * (vidBar.value / 100);
+        miVideo.currentTime = time;
+    }
+
+    function muteVideo() {
+        if (miVideo.muted) {
+            miVideo.muted = false;
+            muteBtn.innerText = "🔊";
+        } else {
+            miVideo.muted = true;
+            muteBtn.innerText = "🔇";
+        }
+    }
+
 </script>
+
+</body>
+</html>t>
 
 </body>
 </html>
