@@ -127,16 +127,24 @@
         /* --- EFECTO FLIP CARD (GIRAR) --- */
         .flip-card {
             background-color: transparent;
-            width: 85%;
+            width: 45%; /* Ancho reducido para que quepan 2 por fila */
+            max-width: 200px; /* Límite para que no se vean enormes en PC */
+            height: 280px; /* Altura fija para que todas sean iguales */
             display: inline-block;
             perspective: 1000px; /* Profundidad 3D */
-            margin-top: 15px;
+            margin: 10px; /* Espaciado uniforme */
             cursor: pointer;
+            position: relative; /* Necesario para que el z-index funcione */
         }
+        .flip-card:hover { z-index: 50; } /* La carta activa se pone encima de las demás */
+        /* Clase para el modo presentación automático */
+        .flip-card.flipped { z-index: 50; } 
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
 
         .flip-card-inner {
             position: relative;
             width: 100%;
+            height: 100%; /* Ocupar toda la altura fija */
             text-align: center;
             transition: transform 0.8s;
             transform-style: preserve-3d;
@@ -148,6 +156,8 @@
 
         .flip-card-front, .flip-card-back {
             width: 100%;
+            height: 100%; /* Ocupar toda la altura fija */
+            box-sizing: border-box; /* ¡CLAVE! Evita que los bordes agranden la carta */
             backface-visibility: hidden; /* Oculta la cara trasera al girar */
             border-radius: 15px; /* Bordes redondeados en la tarjeta Polaroid */
             /* Estilo Polaroid movido aquí */
@@ -163,6 +173,8 @@
 
         .flip-card-front img {
             width: 100%;
+            height: 100%; /* Forzar a que la imagen llene el hueco */
+            object-fit: cover; /* Recorta la imagen para que encaje perfecta y no se aplaste */
             display: block;
             border: none;
             box-shadow: none;
@@ -662,14 +674,32 @@ lo quiero contigo vivir de verdad.
 <!-- Sección Agrupada: Cartas Especiales -->
 <div class="card">
     <h2>💌 Nuestras Cartas Especiales</h2>
+    <button onclick="iniciarPresentacion()" style="margin-bottom: 15px; background-color: #ffeb3b; color: #033e6b; font-weight: bold;">▶️ Ver Presentación Automática</button>
     <p>Un rincón sagrado para nuestros sentimientos escritos...</p>
 
     <button class="accordion">🌹 Cartas de pau mi Amors </button>
     <div class="panel">
         <p>Aquí guardo con amor lo que me escribiste:</p>
         <div id="container-ella">
-            <p><i>"Cada vez que leo esto, me enamoro más."</i></p>
+            <!-- Estructura Flip Card para la carta estática -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front"><img src="carta_ella.jpeg" alt="Carta de ella"></div>
+                    <div class="flip-card-back">📅 23/03/2026<br>❤️ Te Amo<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                </div>
+            </div>
+
+            <!-- CARTA 3 (Nueva) -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front"><img src="carta_ella2.jpeg" alt="Carta de ella"></div>
+                    <div class="flip-card-back">📅 Fecha<br>💌 Recuerdo<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                </div>
+            </div>
+
+           
         </div>
+        <p><i>"Cada vez que leo esto, me enamoro más."</i></p>
         <div class="upload-container">
             <input type="text" id="nota-ella" placeholder="Escribe una nota bonita..." class="note-input">
             <label for="input-ella" class="custom-file-upload">➕ Agregar Nueva Carta</label>
@@ -681,8 +711,31 @@ lo quiero contigo vivir de verdad.
     <div class="panel">
         <p>Mis sentimientos plasmados en papel para ti:</p>
         <div id="container-el">
-            <p><i>"Escrito con todo mi corazón."</i></p>
+            <!-- Estructura Flip Card para la carta estática -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front"><img src="carta_el.jpeg" alt="Carta para ella"></div>
+                    <div class="flip-card-back">📅 23/03/2026<br>💙 Para siempre<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                </div>
+            </div>
+
+            <!-- CARTA 2 MIKI (Nueva) -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front"><img src="carta_el2.jpeg" alt="Carta Miki"></div>
+                    <div class="flip-card-back">📅 Fecha<br>💙 Título<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                </div>
+            </div>
+
+            <!-- CARTA 3 MIKI (Nueva) -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front"><img src="carta_el3.png" alt="Carta Miki"></div>
+                    <div class="flip-card-back">📅 Fecha<br>💙 Título<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                </div>
+            </div>
         </div>
+        <p><i>"Escrito con todo mi corazón."</i></p>
         <div class="upload-container">
             <input type="text" id="nota-el" placeholder="Escribe una nota bonita..." class="note-input">
             <label for="input-el" class="custom-file-upload">➕ Agregar Nueva Carta</label>
@@ -695,11 +748,24 @@ lo quiero contigo vivir de verdad.
 <div class="card">
     <h2>💬 Mensajes Favoritos</h2>
     <p>Esas palabras tuyas que me alegran el día... 📱</p>
-
+    
     <button class="accordion">🌹 Mensajes de Paola</button>
     <div class="panel">
         <div id="whatsapp-container-paola" class="chat-section">
-            <!-- Mensajes de Paola -->
+            <!-- Mensajes de Paola (Fijos para que todos los vean) -->
+            <div class="chat-bubble">
+                Ese día de enero jamás imaginé que conocería a alguien tan especial y mucho menos que esa persona se convertiría en la más importante de mi vida y en el amor más grande que he sentido.
+
+Tal vez suene un poco cliché decir que me gustaste desde el primer momento pero es la verdad. Desde ese primer día tu forma de ser, tu esencia tan hermosa me cautivaron por completo. Y siempre voy a guardar en mi corazón el inicio de nuestra historia porque para mí es simplemente perfecta.
+
+Aún no entiendo del todo qué hiciste conmigo, pero lo que sí sé es que, aunque estés lejos, te siento increíblemente cerca. Quizá es porque eres el amor de mi vida y quiero que siga siendo así, porque te amo tanto que a veces siento que mi corazón no puede contenerlo todo.
+
+Quiero que seas tú, siempre tú. Porque eres el chico más maravilloso que conozco, el que ilumina mis días con su forma tan única de amar. Y aunque a veces me cueste expresar todo lo que siento, quiero intentarlo cada día por ti, para que nunca dudes de lo mucho que te amo.
+
+Prometo amarte todos los días de mi vida y hacerte sentir el más amado, porque lo que siento por ti no tiene final.
+                <span class="chat-date">📅 10/05/2025</span>
+            </div>
+            
         </div>
         <div class="upload-container">
             <textarea id="nuevo-mensaje-paola" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Paola dijo..."></textarea>
@@ -710,7 +776,15 @@ lo quiero contigo vivir de verdad.
     <button class="accordion">💙 Mensajes de Mike</button>
     <div class="panel">
         <div id="whatsapp-container-mike" class="chat-section">
-            <!-- Mensajes de Mike -->
+            <!-- Mensajes de Mike (Fijos para que todos los vean) -->
+            <div class="chat-bubble">
+                Eres lo mejor que me ha pasado en la vida 💙
+                <span class="chat-date">📅 10/05/2025</span>
+            </div>
+            <div class="chat-bubble">
+                Siempre estaré aquí para ti, pase lo que pase ✨
+                <span class="chat-date">📅 15/05/2025</span>
+            </div>
         </div>
         <div class="upload-container">
             <textarea id="nuevo-mensaje-mike" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Mike dijo..."></textarea>
@@ -966,6 +1040,27 @@ lo quiero contigo vivir de verdad.
         }
     }
 
+    // --- FUNCIÓN MODO PRESENTACIÓN AUTOMÁTICA ---
+    function iniciarPresentacion() {
+        const cards = document.querySelectorAll('.flip-card');
+        
+        // Recorremos todas las cartas
+        cards.forEach((card, index) => {
+            // Calcular tiempo: cada carta tiene su turno cada 3 segundos
+            setTimeout(() => {
+                card.classList.add('flipped'); // Girar
+                // Reproducir sonido suave si existe
+                const audio = document.getElementById("flipSound");
+                if (audio) { audio.currentTime = 0; audio.play().catch(e=>{}); }
+            }, index * 3000); // 0s, 3s, 6s...
+
+            // Cerrar la carta un poco antes de que empiece la siguiente
+            setTimeout(() => {
+                card.classList.remove('flipped'); // Volver a girar
+            }, index * 3000 + 2500); // Se mantiene abierta 2.5 segundos
+        });
+    }
+
     // --- Lógica para SUBIR y GUARDAR imágenes nuevas ---
     
     // 1. Función principal que se activa al elegir una foto
@@ -1211,6 +1306,31 @@ lo quiero contigo vivir de verdad.
             miVideo.pause();
             vidBtn.innerText = "▶️";
         }
+    }
+
+    function seekVideo() {
+        // Mover el video cuando tocas la barra
+        var time = miVideo.duration * (vidBar.value / 100);
+        miVideo.currentTime = time;
+    }
+
+    function muteVideo() {
+        if (miVideo.muted) {
+            miVideo.muted = false;
+            muteBtn.innerText = "🔊";
+        } else {
+            miVideo.muted = true;
+            muteBtn.innerText = "🔇";
+        }
+    }
+
+</script>
+
+</body>
+</html>t>
+
+</body>
+</html> }
     }
 
     function seekVideo() {
