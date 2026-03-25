@@ -194,8 +194,8 @@
             background-color: #fffaf0; /* Color papel viejo */
             color: #555;
             font-family: 'Dancing Script', cursive; /* Letra escrita a mano */
-            font-weight: bold;
-            font-size: 1.5rem; /* Un poco más grande para que se lea bien */
+            font-size: 1.4rem; /* Un poco más pequeño para que quepan frases largas */
+            padding: 10px; /* Margen interno para que el texto no toque los bordes */
             flex-direction: column;
         }
         
@@ -685,7 +685,7 @@ lo quiero contigo vivir de verdad.
             <div class="flip-card">
                 <div class="flip-card-inner">
                     <div class="flip-card-front"><img src="carta_ella.jpeg" alt="Carta de ella"></div>
-                    <div class="flip-card-back">📅 23/03/2026<br>❤️ Te Amo<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                    <div class="flip-card-back">"Tu sonrisa es mi refugio favorito." 💖<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
                 </div>
             </div>
 
@@ -693,7 +693,7 @@ lo quiero contigo vivir de verdad.
             <div class="flip-card">
                 <div class="flip-card-inner">
                     <div class="flip-card-front"><img src="carta_ella2.jpeg" alt="Carta de ella"></div>
-                    <div class="flip-card-back">📅 Fecha<br>💌 Recuerdo<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                    <div class="flip-card-back">"Cada momento contigo es un regalo." 🎁<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
                 </div>
             </div>
 
@@ -715,7 +715,7 @@ lo quiero contigo vivir de verdad.
             <div class="flip-card">
                 <div class="flip-card-inner">
                     <div class="flip-card-front"><img src="carta_el.jpeg" alt="Carta para ella"></div>
-                    <div class="flip-card-back">📅 23/03/2026<br>💙 Para siempre<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                    <div class="flip-card-back">"Contigo encontré mi lugar en el mundo." 🌍<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
                 </div>
             </div>
 
@@ -723,7 +723,7 @@ lo quiero contigo vivir de verdad.
             <div class="flip-card">
                 <div class="flip-card-inner">
                     <div class="flip-card-front"><img src="carta_el2.jpeg" alt="Carta Miki"></div>
-                    <div class="flip-card-back">📅 Fecha<br>💙 Título<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                    <div class="flip-card-back">"No te cambiaría por nada ni nadie." ✨<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
                 </div>
             </div>
 
@@ -731,7 +731,7 @@ lo quiero contigo vivir de verdad.
             <div class="flip-card">
                 <div class="flip-card-inner">
                     <div class="flip-card-front"><img src="carta_el3.png" alt="Carta Miki"></div>
-                    <div class="flip-card-back">📅 Fecha<br>💙 Título<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
+                    <div class="flip-card-back">"Mi corazón late fuerte por ti." 💓<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
                 </div>
             </div>
         </div>
@@ -1113,7 +1113,7 @@ Prometo amarte todos los días de mi vida y hacerte sentir el más amado, porque
                     <img src="${imgSrc}" style="width:100%">
                 </div>
                 <div class="flip-card-back">
-                    📅 ${fechaHoy}<br>💙 Recuerdo<div class="click-hint">👆 Clic para ver</div>
+                    "Un recuerdo eterno..." ✨<div class="click-hint">👆 Clic para ver</div>
                 </div>
             </div>
         `;
@@ -1320,6 +1320,14 @@ Prometo amarte todos los días de mi vida y hacerte sentir el más amado, porque
             miVideo.muted = false;
             muteBtn.innerText = "🔊";
         } else {
+            miVideo.muted = true;
+            muteBtn.innerText = "🔇";
+        }
+    }
+
+</script>
+</body>
+</html> } else {
             miVideo.muted = true;
             muteBtn.innerText = "🔇";
         }
