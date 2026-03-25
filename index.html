@@ -1259,9 +1259,10 @@ Prometo amarte todos los días de mi vida y hacerte sentir el más amado, porque
     // Agregar sonido a las cartas que ya existen en el HTML (Estáticas)
     document.querySelectorAll(".flip-card").forEach(card => {
         card.addEventListener("mouseenter", () => {
-            if (flipSoundElement) {
-                flipSoundElement.currentTime = 0;
-                flipSoundElement.play().catch(e => {});
+            const audio = document.getElementById("flipSound");
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => {});
             }
         });
     });
@@ -1325,34 +1326,5 @@ Prometo amarte todos los días de mi vida y hacerte sentir el más amado, porque
     }
 
 </script>
-
-</body>
-</html>t>
-
-</body>
-</html> }
-    }
-
-    function seekVideo() {
-        // Mover el video cuando tocas la barra
-        var time = miVideo.duration * (vidBar.value / 100);
-        miVideo.currentTime = time;
-    }
-
-    function muteVideo() {
-        if (miVideo.muted) {
-            miVideo.muted = false;
-            muteBtn.innerText = "🔊";
-        } else {
-            miVideo.muted = true;
-            muteBtn.innerText = "🔇";
-        }
-    }
-
-</script>
-
-</body>
-</html>t>
-
 </body>
 </html>
