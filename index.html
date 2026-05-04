@@ -1,1329 +1,658 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Ti 💙</title>
-
-    <!-- Icono de la pestaña -->
-    <link rel="icon" type="image/jpeg" href="icon.jpg">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
-
-    <!-- Librería para el efecto de confeti (requiere internet) -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.2rem;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('pochacco-and.jpg');
-            background-size: cover;      /* Hace que la imagen cubra toda la pantalla */
-            background-position: center; /* Centra la imagen */
-            background-attachment: fixed;/* La imagen se queda fija al bajar */
-            color: white;
-            text-align: center;
-            overflow-x: hidden;
-        }
-
-        header {
-            padding: 40px 20px;
-            position: relative;
-            z-index: 10; /* Asegura que el título esté por encima de la lluvia */
-        }
-
-        h1 {
-            font-size: 40px;
-            text-shadow: 0 0 10px #fff, 0 0 20px #4da6ff, 0 0 30px #4da6ff; /* Efecto Glow */
-        }
-
-        /* --- MEJORA 1: Barra de desplazamiento bonita --- */
-        ::-webkit-scrollbar {
-            width: 12px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #4da6ff;
-            border-radius: 10px;
-            border: 3px solid transparent;
-            background-clip: content-box;
-        }
-
-        /* Animación de entrada suave para las tarjetas */
-        @keyframes slideInUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .card {
-            background: rgba(240, 248, 255, 0.85); /* MEJORA 2: Efecto Cristal (Semitransparente) */
-            backdrop-filter: blur(8px); /* Difumina el fondo detrás */
-            margin: 20px auto;
-            padding: 20px;
-            max-width: 500px;
-            width: 90%; /* Mejor ajuste en móviles */
-            border-radius: 15px;
-            border: 2px solid #4da6ff; /* Borde sólido azul brillante */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra más profunda y elegante */
-            color: #033e6b;
-            animation: slideInUp 0.8s ease-out forwards; /* Aplicar animación */
-            position: relative;
-            z-index: 10; /* Texto por encima de la lluvia */
-        }
-
-        button {
-            background-color: #4da6ff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease; /* MEJORA 3: Suaviza la animación al pasar el mouse */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        button:hover {
-            background-color: #3399ff;
-            transform: translateY(-3px); /* El botón "flota" hacia arriba */
-            box-shadow: 0 7px 15px rgba(77, 166, 255, 0.4); /* Resplandor al pasar el mouse */
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Animación para cuando aparece el mensaje secreto */
-        .pop-in {
-            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Corazones cayendo */
-        .heart {
-            position: fixed;
-            top: -10px;
-            font-size: 20px;
-            animation: fall linear infinite;
-            z-index: 1; /* Lluvia al fondo (detrás de todo) */
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-            }
-        }
-
-        /* Estilo para las imágenes dentro de las tarjetas */
-        .card img {
-            /* Estilos base por si hay imágenes fuera del flip, pero reseteados dentro */
-            max-width: 100%;
-            border-radius: 2px;
-        }
-
-        /* --- EFECTO FLIP CARD (GIRAR) --- */
-        .flip-card {
-            background-color: transparent;
-            width: 45%; /* Ancho reducido para que quepan 2 por fila */
-            max-width: 200px; /* Límite para que no se vean enormes en PC */
-            height: 280px; /* Altura fija para que todas sean iguales */
-            display: inline-block;
-            perspective: 1000px; /* Profundidad 3D */
-            margin: 10px; /* Espaciado uniforme */
-            cursor: pointer;
-            position: relative; /* Necesario para que el z-index funcione */
-        }
-        .flip-card:hover { z-index: 50; } /* La carta activa se pone encima de las demás */
-        /* Clase para el modo presentación automático */
-        .flip-card.flipped { z-index: 50; } 
-        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%; /* Ocupar toda la altura fija */
-            text-align: center;
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
-        }
-
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .flip-card-front, .flip-card-back {
-            width: 100%;
-            height: 100%; /* Ocupar toda la altura fija */
-            box-sizing: border-box; /* ¡CLAVE! Evita que los bordes agranden la carta */
-            backface-visibility: hidden; /* Oculta la cara trasera al girar */
-            border-radius: 15px; /* Bordes redondeados en la tarjeta Polaroid */
-            /* Estilo Polaroid movido aquí */
-            border: 12px solid white;
-            border-bottom: 50px solid white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            background: white;
-        }
-
-        .flip-card-front {
-            transform: rotateY(0deg);
-        }
-
-        .flip-card-front img {
-            width: 100%;
-            height: 100%; /* Forzar a que la imagen llene el hueco */
-            object-fit: cover; /* Recorta la imagen para que encaje perfecta y no se aplaste */
-            display: block;
-            border: none;
-            box-shadow: none;
-            margin: 0;
-            border-radius: 10px; /* Bordes redondeados en la foto misma */
-        }
-
-        .flip-card-back {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            transform: rotateY(180deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #fffaf0; /* Color papel viejo */
-            color: #555;
-            font-family: 'Dancing Script', cursive; /* Letra escrita a mano */
-            font-size: 1.4rem; /* Un poco más pequeño para que quepan frases largas */
-            padding: 10px; /* Margen interno para que el texto no toque los bordes */
-            flex-direction: column;
-        }
-        
-        /* Estilos para los botones desplegables (Acordeón) */
-        .accordion {
-            background-color: #7ec0ee;
-            color: white;
-            cursor: pointer;
-            padding: 15px;
-            width: 100%;
-            text-align: left;
-            border: none;
-            outline: none;
-            transition: 0.4s;
-            border-radius: 10px;
-            margin-top: 10px;
-            font-size: 1.3rem;
-            font-family: 'Dancing Script', cursive;
-        }
-
-        .accordion:hover {
-            background-color: #4da6ff;
-        }
-
-        .active {
-            background-color: #0277bd; /* Azul más oscuro cuando está abierto */
-        }
-
-        /* Flecha animada */
-        .accordion::after {
-            content: '\25BC'; /* Código del triángulo hacia abajo */
-            font-size: 0.9rem;
-            float: right;
-            transition: transform 0.4s ease; /* Animación suave */
-            margin-left: 10px;
-        }
-
-        .active::after {
-            transform: rotate(180deg); /* Gira la flecha hacia arriba */
-        }
-
-        .panel {
-            padding: 0 18px;
-            display: none;
-            background-color: white;
-            overflow: hidden;
-        }
-
-        /* --- Estilos para el visor de imágenes (Modal) --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            padding-top: 60px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.9);
-        }
-
-        .modal-content {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-            border-radius: 10px;
-            animation-name: zoom;
-            animation-duration: 0.6s;
-        }
-
-        @keyframes zoom {
-            from {transform:scale(0)}
-            to {transform:scale(1)}
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #bbb;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Botón de descargar dentro del modal */
-        .download-btn {
-            display: block;
-            width: fit-content;
-            margin: 20px auto;
-            padding: 10px 25px;
-            background-color: white;
-            color: #033e6b;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: 0.3s;
-            font-size: 1.2rem;
-        }
-
-        .download-btn:hover {
-            background-color: #e6f7ff;
-            transform: scale(1.05);
-        }
-
-        /* Estilo para el botón de subir archivo */
-        .upload-container {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px dashed #a0d8ef;
-        }
-        
-        input[type="file"] {
-            display: none; /* Ocultamos el input original */
-        }
-
-        .custom-file-upload {
-            display: inline-block;
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #4da6ff; /* Azul */
-            color: white;
-            border-radius: 10px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .custom-file-upload:hover {
-            background-color: #3399ff;
-        }
-
-        /* Botón de borrar (Rojo) */
-        .delete-btn {
-            background-color: #ff4d4d;
-            margin-left: 10px;
-        }
-        .delete-btn:hover {
-            background-color: #cc0000;
-        }
-
-        /* Contenedor para cada foto nueva (para poder borrarla individualmente) */
-        .memory-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        /* Botón pequeño de borrar (X) sobre la foto */
-        .btn-delete-individual {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-        
-        .btn-delete-individual:hover {
-            background-color: #cc0000;
-            transform: scale(1.1);
-        }
-
-        /* Campo de texto para notas */
-        .note-input {
-            width: 70%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 2px solid #a0d8ef;
-            border-radius: 10px;
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.1rem;
-            outline: none;
-            text-align: center;
-            color: #033e6b;
-            transition: 0.3s; /* Animación suave al escribir */
-        }
-
-        /* MEJORA 4: Brillo al escribir */
-        .note-input:focus {
-            border-color: #4da6ff;
-            box-shadow: 0 0 10px rgba(77, 166, 255, 0.3); /* Brillo azul */
-        }
-
-        /* Cursor parpadeante al final de la frase */
-        #frase-diaria::after {
-            content: '|';
-            display: inline-block;
-            margin-left: 5px;
-            animation: parpadeo 0.8s infinite;
-        }
-
-        /* Texto de ayuda parpadeante en las cartas */
-        .click-hint {
-            font-size: 0.8rem;
-            margin-top: 5px;
-            animation: parpadeo 2s infinite; /* Parpadeo más lento y suave */
-        }
-
-        @keyframes parpadeo {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Ajustes para pantallas pequeñas (Celulares) */
-        @media (max-width: 600px) {
-            h1 { font-size: 2.5rem; } /* Título más pequeño */
-            body { font-size: 1.1rem; }
-            .card { padding: 15px; }
-            .btn-delete-individual { width: 25px; height: 25px; top: 10px; right: 10px; }
-        }
-
-        /* Animación de latido suave */
-        @keyframes latido {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Botón flotante 'Volver arriba' */
-        #btnTop {
-            display: none; /* Oculto por defecto */
-            position: fixed;
-            bottom: 20px;
-            right: 30px;
-            z-index: 99;
-            font-size: 20px;
-            border: none;
-            background-color: #4da6ff;
-            color: white;
-            cursor: pointer;
-            padding: 15px;
-            border-radius: 50%; /* Redondo */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: background-color 0.3s, transform 0.3s;
-            animation: latido 2s infinite; /* Efecto continuo */
-        }
-
-        #btnTop:hover {
-            background-color: #3399ff;
-            animation: none; /* Se detiene al intentar hacer clic */
-            transform: scale(1.15); /* Se queda un poco más grande */
-        }
-
-        /* --- Estilos para la sección de Chat (WhatsApp) --- */
-        .chat-section {
-            background-color: #dcf8c6; /* Color de fondo clásico de WhatsApp */
-            border-radius: 10px;
-            padding: 15px;
-            max-height: 400px;
-            overflow-y: auto; /* Permite bajar si hay muchos mensajes */
-            text-align: left;
-            margin-bottom: 15px;
-            border: 1px solid #cceeff;
-        }
-
-        .chat-bubble {
-            background-color: white;
-            padding: 10px 15px;
-            border-radius: 0 15px 15px 15px; /* Forma de burbuja de chat */
-            margin-bottom: 10px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            position: relative;
-            font-family: sans-serif; /* Letra normal para que se lea bien el chat */
-            font-size: 0.95rem;
-            color: #303030;
-            display: inline-block;
-            max-width: 90%;
-        }
-
-        .chat-date {
-            font-size: 0.7rem;
-            color: #999;
-            text-align: right;
-            margin-top: 5px;
-            display: block;
-        }
-
-        /* Alineación y color para los mensajes de Paola (izquierda) */
-        #whatsapp-container-paola .chat-bubble {
-            background-color: #ffeef8; /* Rosa suave */
-            border-radius: 0 15px 15px 15px;
-        }
-
-        /* Alineación y color para los mensajes de Mike (derecha) */
-        #whatsapp-container-mike {
-            text-align: right;
-        }
-
-        #whatsapp-container-mike .chat-bubble {
-            background-color: #e1f5fe; /* Azul claro para Mike */
-            border-radius: 15px 0 15px 15px; /* Burbuja invertida */
-            text-align: left; /* El texto dentro de la burbuja sigue a la izquierda */
-        }
-
-        /* --- DECORACIONES: Stickers y GIFs Flotantes --- */
-        .sticker {
-            position: fixed; /* Se quedan pegados a la pantalla */
-            z-index: 5;      /* Por encima del fondo pero debajo de los textos importantes */
-            pointer-events: none; /* ¡Importante! Permite hacer clic a través de ellos */
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); /* Un brillo blanco para que resalten */
-        }
-
-        .sticker-izq {
-            bottom: 10px;
-            left: 10px;
-            width: 120px; /* Tamaño del personaje */
-            animation: flotar 3s ease-in-out infinite;
-        }
-
-        .sticker-der {
-            top: 80px;
-            right: 10px;
-            width: 90px;
-            opacity: 0.8;
-        }
-
-        @keyframes flotar {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); } /* Sube y baja suavemente */
-        }
-
-        /* --- Controles de Video Personalizados --- */
-        .custom-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
-            padding: 10px;
-            border-radius: 0 0 10px 10px; /* Redondeado solo abajo */
-            margin-bottom: 15px;
-            border: 2px solid #4da6ff;
-            border-top: none; /* Unir visualmente con el video */
-        }
-        
-        .custom-controls button {
-            padding: 5px 10px; /* Botones más compactos */
-            font-size: 1rem;
-        }
-
-        .custom-controls input[type=range] {
-            flex-grow: 1; /* La barra ocupa todo el espacio */
-            accent-color: #4da6ff; /* ¡ESTO cambia el color de la barra a AZUL! */
-            cursor: pointer;
-            height: 5px;
-        }
-
-        /* --- Pantalla de Bienvenida (Intro) --- */
-        #welcome-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, #000428, #004e92); /* Degradado Azul Profundo */
-            z-index: 10000; /* Por encima de todo */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease-out; /* Se desvanece suavemente */
-        }
-
-        /* --- Animación del Título de Bienvenida --- */
-        #welcome-screen h1 {
-            animation: entradaTitulo 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-        }
-
-        @keyframes entradaTitulo {
-            0% { transform: scale(0) translateY(-100px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        /* --- Emoji Saltarín --- */
-        .emoji-saltarin {
-            font-size: 3rem;
-            margin-top: 15px;
-            animation: salto 0.6s infinite alternate ease-in-out;
-        }
-
-        @keyframes salto {
-            from { transform: translateY(0); }
-            to { transform: translateY(-20px); }
-        }
-
-        #btn-abrir {
-            font-size: 1.5rem;
-            padding: 15px 40px;
-            background-color: #ffffff; /* Botón blanco para resaltar en el azul */
-            color: #004e92; /* Texto azul */
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: 'Dancing Script', cursive;
-            animation: latido 1.2s infinite; /* Late como un corazón */
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Resplandor blanco */
-            margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Te amo pau mi princesita hermosa</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: 'Orbitron', sans-serif;
+    color: white;
+}
+
+/* canvas estrellas */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/* título */
+h1 {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 4vmin;
+    top: 10px;
+    color: #fff;
+    text-shadow: 0 0 10px #0077ff, 0 0 20px #00ffff;
+    z-index: 2;
+    animation: entradaTitulo 2s ease-out forwards;
+}
+
+@keyframes entradaTitulo {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+        filter: blur(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* galaxia */
+.galaxy {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* centro */
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #ffdb3a, #ff8c00);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 40px #ff8c00, 0 0 80px rgba(255, 140, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+    z-index: 3;
+    color: white;
+    text-shadow: 0 0 8px #fff, 0 0 15px #ffdb3a;
+    letter-spacing: 1px;
+    animation: pulse-text 3s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+    0%, 100% {
+        text-shadow: 0 0 8px #fff, 0 0 15px #ffdb3a;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        text-shadow: 0 0 15px #fff, 0 0 30px #ffdb3a, 0 0 45px #ff8c00;
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+}
+
+/* corona del sol */
+.sun-corona {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        rgba(255, 140, 0, 0.3) 10%,
+        transparent 20%,
+        rgba(255, 219, 58, 0.3) 40%,
+        transparent 50%,
+        rgba(255, 140, 0, 0.3) 70%,
+        transparent 80%,
+        rgba(255, 219, 58, 0.3) 90%,
+        transparent 100%
+    );
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(15px);
+    z-index: 2;
+    animation: rotate-corona 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate-corona {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* órbitas */
+.orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* planeta */
+.planet {
+    position: absolute;
+    width: 6vmin;
+    height: 6vmin;
+    min-width: 18px;
+    min-height: 18px;
+    border-radius: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: transform 0.3s, filter 0.3s;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.planet:hover {
+    transform: translateX(-50%) scale(1.2);
+    filter: brightness(1.4) drop-shadow(0 0 15px white);
+}
+
+.planet:active {
+    transform: translateX(-50%) scale(1.5);
+}
+
+/* nombre del mes sobre el planeta */
+.planet-name {
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: white;
+    text-shadow: 0 0 5px #0077ff;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Animación para mantener el texto nivelado */
+@keyframes rotateReverse {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(-360deg); }
+}
+
+/* estilo para el planeta del futuro */
+.future-planet {
+    animation: whitePulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes whitePulse {
+    from {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    }
+    to {
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 0 45px rgba(255, 255, 255, 0.3);
+    }
+}
+
+.ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 180%;
+    height: 180%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotateX(75deg);
+    pointer-events: none;
+}
+
+/* animación órbita */
+@keyframes rotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* cometas de frases */
+.comet {
+    position: fixed;
+    white-space: nowrap;
+    color: white;
+    font-weight: bold;
+    font-size: 0.7rem;
+    text-shadow: 0 0 5px #fff, 0 0 15px #0077ff;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    filter: blur(0.5px);
+}
+
+@keyframes cometFlow {
+    0% { transform: translate(-110%, 0) rotate(-15deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translate(110vw, 50vh) rotate(-15deg); opacity: 0; }
+}
+
+/* chispas de la estela */
+.sparkle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes sparkleFade {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+/* modal */
+#modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+#contenido {
+    background: rgba(20, 20, 20, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    width: 85%;
+    max-width: 320px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 191, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+    animation: aparecer 0.4s ease;
+}
+
+@keyframes aparecer {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* confeti de corazones */
+.heart-confetti {
+    position: fixed;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 100;
+    user-select: none;
+}
+
+@keyframes heartBurst {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { 
+        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--tr)) scale(1.2); 
+        opacity: 0; 
+    }
+}
+
+#galeria-imagenes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px; /* Espacio entre las imágenes */
+}
+
+#galeria-imagenes img {
+    width: 48%; /* Para que quepan dos imágenes por fila con un pequeño espacio */
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    width: auto;
+    font-size: 0.75rem;
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    border-radius: 50px;
+    background: rgba(0, 119, 255, 0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 10px rgba(0, 119, 255, 0.2);
+}
+
+button:hover {
+    background: rgba(0, 255, 255, 0.3);
+    border-color: #00ffff;
+    scale: 1.05;
+    box-shadow: 0 0 20px rgba(0, 119, 255, 0.5);
+}
+
+#contenido button {
+    width: 100%;
+}
+
+/* contador */
+#contador {
+    position: absolute;
+    bottom: 80px;
+    width: 100%;
+    text-align: center;
+    font-size: 2.8vmin;
+    z-index: 2;
+    color: #fff;
+    text-shadow: 0 0 10px #00ffff;
+    animation: neonPulse 2s infinite alternate;
+}
+
+@keyframes neonPulse {
+    from {
+        text-shadow: 0 0 10px #00ffff, 0 0 20px #0077ff;
+    }
+    to {
+        text-shadow: 0 0 15px #00ffff, 0 0 30px #0077ff, 0 0 40px #0077ff;
+        opacity: 0.85;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<!-- PANTALLA DE BIENVENIDA -->
-<div id="welcome-screen">
-    
-    <h1 style="color: white; text-shadow: 0 0 10px #fff;">🎁 Tienes una sorpresa</h1>
-    <p style="color: #ddd;"><span style="color: #ffeb3b; font-weight: bold; font-size: 1.3rem;">Tu amors</span> tiene un regalo para ti</p>
-    <div class="emoji-saltarin">👇</div>
-    <button id="btn-abrir" onclick="abrirRegalo()">Abrir Regalo ✨</button>
+<canvas id="stars"></canvas>
+
+<h1>Te amo pau mi princesita hermosa</h1>
+
+<div class="galaxy">
+    <div class="sun-corona"></div>
+    <div class="center" onclick="mostrarCartaSol()">Pau + Miki</div>
 </div>
 
-<header>
-    <h1>Feliz Cumpleaños Pau Mi Amors 💙🎂</h1>
-    <p id="frase-diaria">Cargando mensaje de amor...</p>
-</header>
+<div id="contador"></div>
 
-<!-- STICKERS DECORATIVOS -->
-<!-- Pochacco bailando o saludando en la esquina inferior izquierda -->
-<img src="mi_sticker_1.gif" class="sticker sticker-izq" alt="Pochacco">
-<!-- Corazones o brillos en la esquina superior derecha -->
-<img src="mi_sticker_2.gif" class="sticker sticker-der" alt="Decoración">
-
-<div class="card">
-    <h2>💌 Para Ti</h2>
-    <p>
-        Hay noches donde el silencio pesa más,
-y tu ausencia se siente en cada lugar,
-quisiera tenerte aquí, poderte abrazar,
-pero el destino nos quiso separar.
-
-Y aun así… no dejo de pensarte,
-porque en tu forma de ser hay algo tan puro,
-eres calma en medio del caos,
-mi lugar seguro en este mundo oscuro.
-
-Paola, tienes un alma tan hermosa,
-de esas que no se encuentran dos veces,
-con tu dulzura curas mis heridas,
-y haces que crea en lo imposible.
-
-Aunque estemos a kilómetros de distancia,
-mi corazón siempre sabe dónde estás,
-porque no hay mapa que mida lo que siento,
-ni frontera que te pueda alejar.
-
-Y si un día el tiempo nos junta por fin,
-prometo no soltarte jamás,
-porque todo este amor que guardé en silencio…
-lo quiero contigo vivir de verdad.
-    </p>
-</div>
-
-<div class="card">
-    <h2>⏳ Nuestro Tiempo Juntos</h2>
-    <h3>Espero que nunca se acabe</h3>
-    <p id="contador"></p>
-</div>
-
-<!-- Sección Agrupada: Cartas Especiales -->
-<div class="card">
-    <h2>💌 Nuestras Cartas Especiales</h2>
-    <button onclick="iniciarPresentacion()" style="margin-bottom: 15px; background-color: #ffeb3b; color: #033e6b; font-weight: bold;">▶️ Ver Presentación Automática</button>
-    <p>Un rincón sagrado para nuestros sentimientos escritos...</p>
-
-    <button class="accordion">🌹 Cartas de pau mi Amors </button>
-    <div class="panel">
-        <p>Aquí guardo con amor lo que me escribiste:</p>
-        <div id="container-ella">
-            <!-- Estructura Flip Card para la carta estática -->
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front"><img src="carta_ella.jpeg" alt="Carta de ella"></div>
-                    <div class="flip-card-back">"Tu sonrisa es mi refugio favorito." 💖<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
-                </div>
-            </div>
-
-            <!-- CARTA 3 (Nueva) -->
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front"><img src="carta_ella2.jpeg" alt="Carta de ella"></div>
-                    <div class="flip-card-back">"Cada momento contigo es un regalo." 🎁<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
-                </div>
-            </div>
-
-           
-        </div>
-        <p><i>"Cada vez que leo esto, me enamoro más."</i></p>
-        <div class="upload-container">
-            <input type="text" id="nota-ella" placeholder="Escribe una nota bonita..." class="note-input">
-            <label for="input-ella" class="custom-file-upload">➕ Agregar Nueva Carta</label>
-            <input id="input-ella" type="file" accept="image/*" onchange="subirImagen(this, 'container-ella', 'key_ella', 'nota-ella')">
-        </div>
-    </div>
-
-    <button class="accordion">💙 Cartas de Miki</button>
-    <div class="panel">
-        <p>Mis sentimientos plasmados en papel para ti:</p>
-        <div id="container-el">
-            <!-- Estructura Flip Card para la carta estática -->
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front"><img src="carta_el.jpeg" alt="Carta para ella"></div>
-                    <div class="flip-card-back">"Contigo encontré mi lugar en el mundo." 🌍<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
-                </div>
-            </div>
-
-            <!-- CARTA 2 MIKI (Nueva) -->
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front"><img src="carta_el2.jpeg" alt="Carta Miki"></div>
-                    <div class="flip-card-back">"No te cambiaría por nada ni nadie." ✨<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
-                </div>
-            </div>
-
-            <!-- CARTA 3 MIKI (Nueva) -->
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front"><img src="carta_el3.png" alt="Carta Miki"></div>
-                    <div class="flip-card-back">"Mi corazón late fuerte por ti." 💓<div style="font-size: 0.8rem; margin-top: 5px;">👆 Clic para ver</div></div>
-                </div>
-            </div>
-        </div>
-        <p><i>"Escrito con todo mi corazón."</i></p>
-        <div class="upload-container">
-            <input type="text" id="nota-el" placeholder="Escribe una nota bonita..." class="note-input">
-            <label for="input-el" class="custom-file-upload">➕ Agregar Nueva Carta</label>
-            <input id="input-el" type="file" accept="image/*" onchange="subirImagen(this, 'container-el', 'key_el', 'nota-el')">
-        </div>
+<div id="modal">
+    <div id="contenido">
+        <div id="corazon-abril" class="heart-beat">💙</div>
+        <h2 id="titulo"></h2>
+        <p id="texto"></p>
+        <div id="galeria-imagenes"></div>
+        <button onclick="cerrar()">Cerrar 💙</button>
     </div>
 </div>
 
-<!-- Sección: Mensajes de WhatsApp -->
-<div class="card">
-    <h2>💬 Mensajes Favoritos</h2>
-    <p>Esas palabras tuyas que me alegran el día... 📱</p>
-    
-    <button class="accordion">🌹 Mensajes de Paola</button>
-    <div class="panel">
-        <div id="whatsapp-container-paola" class="chat-section">
-            <!-- Mensajes de Paola (Fijos para que todos los vean) -->
-            <div class="chat-bubble">
-                Ese día de enero jamás imaginé que conocería a alguien tan especial y mucho menos que esa persona se convertiría en la más importante de mi vida y en el amor más grande que he sentido.
+<button onclick="activarMusica()" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:2;">
+🎶 Música
+</button>
 
-Tal vez suene un poco cliché decir que me gustaste desde el primer momento pero es la verdad. Desde ese primer día tu forma de ser, tu esencia tan hermosa me cautivaron por completo. Y siempre voy a guardar en mi corazón el inicio de nuestra historia porque para mí es simplemente perfecta.
-
-Aún no entiendo del todo qué hiciste conmigo, pero lo que sí sé es que, aunque estés lejos, te siento increíblemente cerca. Quizá es porque eres el amor de mi vida y quiero que siga siendo así, porque te amo tanto que a veces siento que mi corazón no puede contenerlo todo.
-
-Quiero que seas tú, siempre tú. Porque eres el chico más maravilloso que conozco, el que ilumina mis días con su forma tan única de amar. Y aunque a veces me cueste expresar todo lo que siento, quiero intentarlo cada día por ti, para que nunca dudes de lo mucho que te amo.
-
-Prometo amarte todos los días de mi vida y hacerte sentir el más amado, porque lo que siento por ti no tiene final.
-                <span class="chat-date">📅 10/05/2025</span>
-            </div>
-            
-        </div>
-        <div class="upload-container">
-            <textarea id="nuevo-mensaje-paola" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Paola dijo..."></textarea>
-            <button class="custom-file-upload" onclick="agregarMensajeTexto('paola')">➕ Guardar (Paola)</button>
-        </div>
-    </div>
-
-    <button class="accordion">💙 Mensajes de Mike</button>
-    <div class="panel">
-        <div id="whatsapp-container-mike" class="chat-section">
-            <!-- Mensajes de Mike (Fijos para que todos los vean) -->
-            <div class="chat-bubble">
-                Eres lo mejor que me ha pasado en la vida 💙
-                <span class="chat-date">📅 10/05/2025</span>
-            </div>
-            <div class="chat-bubble">
-                Siempre estaré aquí para ti, pase lo que pase ✨
-                <span class="chat-date">📅 15/05/2025</span>
-            </div>
-        </div>
-        <div class="upload-container">
-            <textarea id="nuevo-mensaje-mike" class="note-input" style="width: 80%; height: 60px; resize: none;" placeholder="Escribe lo que Mike dijo..."></textarea>
-            <button class="custom-file-upload" onclick="agregarMensajeTexto('mike')">➕ Guardar (Mike)</button>
-        </div>
-    </div>
-</div>
-
-<div class="card">
-    <h2>🔒 Mensaje Secreto</h2>
-    <button onclick="mostrarMensaje()">Haz clic aquí 💙</button>
-    <p id="mensaje" class="hidden">
-        Si algún día dudas de mi amor, recuerda esto: incluso en silencio y a distancia… siempre te elijo a ti.💙
-    </p>
-</div>
-
-<div class="card">
-    <h2>🎵 Música</h2>
-    <p>Nuestra canción especial 🎬</p>
-    <video id="miVideo" width="100%" height="auto" style="border-radius: 10px 10px 0 0; margin-bottom: 0; max-height: 300px; background-color: black; display: block;">
-        <source src="video.mp4" type="video/mp4">
-        Tu navegador no soporta la reproducción de video.
-    </video>
-    <div class="custom-controls">
-        <button id="vidBtn" onclick="playPauseVideo()">▶️</button>
-        <input type="range" id="vidBar" value="0" min="0" max="100" oninput="seekVideo()" onchange="seekVideo()">
-        <button id="muteBtn" onclick="muteVideo()">🔊</button>
-    </div>
-    <button id="btnMusica" onclick="toggleMusica()">Reproducir Música ▶️</button>
-</div>
-
-<!-- Música -->
-<audio id="musica" loop autoplay>
-    <source src="mi_cancion.mp3" type="audio/mpeg">
+<audio id="musica" loop>
+    <source src="musica.mp3" type="audio/mp3">
 </audio>
-
-<!-- Efecto de sonido click -->
-<audio id="clickSound">
-    <source src="click.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Efecto de sonido al girar carta -->
-<audio id="flipSound">
-    <source src="flip.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Botón Volver Arriba -->
-<button id="btnTop" onclick="subirArriba()" title="Volver arriba">⬆️</button>
-
-<!-- Modal para ver imágenes en grande -->
-<div id="imageModal" class="modal">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="img01">
-    <a id="downloadBtn" class="download-btn" download>Descargar Imagen ⬇️</a>
-</div>
 
 <script>
-    const musica = document.getElementById("musica");
-    const btnMusica = document.getElementById("btnMusica");
+// ⭐ estrellas animadas
+let canvas = document.getElementById("stars");
+let ctx = canvas.getContext("2d");
 
-    // --- FUNCIÓN PARA ABRIR EL REGALO ---
-    function abrirRegalo() {
-        const pantalla = document.getElementById('welcome-screen');
-        
-        // 1. Desvanecer la pantalla negra
-        pantalla.style.opacity = 0;
-        
-        // --- LANZAR CONFETI INMEDIATAMENTE ---
-        // Usamos zIndex alto (10001) para que se vea ENCIMA de la pantalla negra
-        var duration = 3 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10001 };
-        var random = function(min, max) { return Math.random() * (max - min) + min; };
-        var interval = setInterval(function() {
-            var timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) return clearInterval(interval);
-            var particleCount = 50 * (timeLeft / duration);
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } }));
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }, 250);
-        
-        // 2. Reproducir música (ahora sí funcionará 100% porque hubo un clic)
-        musica.volume = 0.5; // Volumen suave (50%)
-        musica.play().then(() => {
-            btnMusica.innerText = "Pausar Música ⏸️";
-        }).catch(e => console.log("Error audio:", e));
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-        // 3. Quitar la pantalla del HTML después de 1 segundo (tiempo de la animación)
-        setTimeout(() => {
-            pantalla.style.display = 'none';
-        }, 1000);
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+let stars = [];
+
+for(let i=0;i<150;i++){
+    stars.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        size: Math.random()*2
+    });
+}
+
+function drawStars(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="white";
+
+    stars.forEach(s=>{
+        ctx.fillRect(s.x,s.y,s.size,s.size);
+        s.y += 0.2;
+        if(s.y > canvas.height) s.y = 0;
+    });
+
+    requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// 💖 recuerdos
+let recuerdos = [
+    {
+        titulo: "Febrero 💫",
+        texto: "Aquí comenzó todo… cuando hablar contigo se volvió lo más importante para mí 💖. Nos conocimos en Sweet Dance un 20 de Febrero, ese juego de baile que unió nuestros mundos.",
+        img: ["febrero 1.jpeg", "febrero 2.jpeg"]
+    },
+    {
+        titulo: "Marzo 🌙",
+        texto: "Entre risas, cartas y momentos juntos… me di cuenta de que ya eras parte de mi vida ✨. Además, celebramos una fecha muy importante: tu cumpleaños el 25 de Marzo.",
+        img: ["marzo 1.jpeg", "marzo 2.jpeg"]
+    },
+    {
+        titulo: "Abril 🌌",
+        texto: "Pasamos algunos malentendidos y problemitas... pero en una llamada que hicimos dibujamos un corazón juntos y fue muy lindo.Y entendimos que queríamos quedarnos 💕",
+        img: ["abril.jpeg"]
+    },
+    {
+        titulo: "Mayo 🌊",
+        texto: "Cada día es más especial y quiero seguir contruyendo este nuevo planeta contigo mi princesita...",
+        img: ["foto4.png"]
+    }
+];
+
+// 🪐 crear planetas
+let galaxy = document.querySelector(".galaxy");
+
+recuerdos.forEach((r, i) => {
+    let orbit = document.createElement("div");
+    orbit.className = "orbit";
+
+    let duration = 12 + i * 4;
+    let size = 30 + i * 18;
+
+    orbit.style.width = size + "vmin";
+    orbit.style.height = size + "vmin";
+    orbit.style.animation = `rotate ${duration}s linear infinite`;
+
+    let planet = document.createElement("div");
+    planet.className = "planet";
+    planet.style.top = "-3vmin"; // Centra el planeta sobre la línea de la órbita
+
+    // Generar un color único basado en el índice (HUE)
+    let hue = (i * 137.5) % 360; 
+
+    // Etiqueta con el nombre del mes
+    let nameLabel = document.createElement("div");
+    nameLabel.className = "planet-name";
+    nameLabel.innerText = r.titulo;
+    nameLabel.style.animation = `rotateReverse ${duration}s linear infinite`;
+    planet.appendChild(nameLabel);
+
+    // Si es el último planeta, no tiene color (estilo misterioso/nueva historia)
+    if (i === recuerdos.length - 1) {
+        planet.classList.add("future-planet");
+        planet.style.background = "rgba(255, 255, 255, 0.1)";
+        planet.style.border = "2px dashed rgba(255, 255, 255, 0.4)";
+    } else {
+        planet.style.background = `radial-gradient(circle at 30% 30%, hsl(${hue}, 80%, 75%), hsl(${hue}, 80%, 45%))`;
+        planet.style.boxShadow = `0 0 20px hsla(${hue}, 80%, 60%, 0.7)`;
     }
 
-    // --- Frases Aleatorias ---
-    const frasesDeAmor = [
-        "Eres la casualidad más bonita de mi vida. 🍀",
-        "Mi lugar favorito en el mundo es a tu lado. 🌎💙",
-        "Te amo más de lo que las palabras pueden decir. 📖",
-        "Gracias por hacer mis días más felices. ☀️",
-        "Contigo, cada momento es mágico. ✨",
-        "Eres mi pensamiento favorito al despertar. 💭",
-        "Tú haces que mi corazón sonría. 😊",
-        "Te elijo hoy y siempre. 💍"
-    ];
+    planet.onclick = () => mostrar(i);
 
-    // --- Efecto Máquina de Escribir ---
-    const elementoFrase = document.getElementById("frase-diaria");
-    const textoFrase = frasesDeAmor[Math.floor(Math.random() * frasesDeAmor.length)];
-    
-    elementoFrase.innerText = ""; // Limpiamos el texto inicial "Cargando..."
-    
-    let indiceFrase = 0;
-    function escribirMaquina() {
-        if (indiceFrase < textoFrase.length) {
-            elementoFrase.innerHTML += textoFrase.charAt(indiceFrase);
-            indiceFrase++;
-            setTimeout(escribirMaquina, 100); // Velocidad: 100ms por letra (puedes cambiarlo)
-        }
-    }
-    escribirMaquina(); // Iniciar animación
-
-    function toggleMusica() {
-        if (musica.paused) {
-            musica.play();
-            btnMusica.innerText = "Pausar Música ⏸️";
-        } else {
-            musica.pause();
-            btnMusica.innerText = "Reanudar Música ▶️";
-        }
+    // Añadir anillos aleatoriamente (50% de probabilidad)
+    if (Math.random() > 0.5) {
+        let ring = document.createElement("div");
+        ring.className = "ring";
+        ring.style.borderColor = `hsla(${hue}, 80%, 70%, 0.4)`;
+        planet.appendChild(ring);
     }
 
-    // Mostrar mensaje oculto
-    function mostrarMensaje() {
-        const mensajeDiv = document.getElementById("mensaje");
-        mensajeDiv.classList.remove("hidden");
-        mensajeDiv.classList.add("pop-in"); // Añadir animación de rebote
-        
-        if (musica.paused) {
-            toggleMusica();
-        }
+    orbit.appendChild(planet);
+    galaxy.appendChild(orbit);
+});
 
-        // Disparar Confeti
-        var duration = 3 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-        var random = function(min, max) { return Math.random() * (max - min) + min; };
-
-        var interval = setInterval(function() {
-            var timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) return clearInterval(interval);
-            var particleCount = 50 * (timeLeft / duration);
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } }));
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }, 250);
-    }
-
-    // Contador de tiempo juntos (CONFIGURACIÓN)
-    // 1. CAMBIA ESTA FECHA por la fecha de HOY (ej: "2026-03-23") para que empiece a contar desde ahora
-    const fechaReferencia = new Date("2026-03-23"); 
-    // 2. Aquí definimos que ya llevan 52 días
-    const diasIniciales = 52;
-
-    function actualizarContador() {
-        const ahora = new Date();
-        const diferencia = ahora - fechaReferencia;
-
-        const diasPasados = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
-
-        const total = diasIniciales + diasPasados;
-        document.getElementById("contador").innerText = total + " días, " + horas + "h " + minutos + "m " + segundos + "s 💙";
-    }
-
-    setInterval(actualizarContador, 1000);
-    actualizarContador();
-
-    // --- LLUVIA DE PALABRAS Y CORAZONES ---
-    // Aquí ponemos tus palabras graciosas
-    const palabrasLluvia = ["Amors 💙", "Patito 🐣", "Princesa 👑", "Osea jelou 💅", "Amiguis 💅", "💙", "✨"];
-
-    function crearCorazon() {
+// 💌 modal
+function lanzarConfeti() {
+    const cantidad = 25;
+    for (let i = 0; i < cantidad; i++) {
         const heart = document.createElement("div");
-        heart.classList.add("heart");
-        // Elegir una palabra o emoji al azar de la lista
-        heart.innerText = palabrasLluvia[Math.floor(Math.random() * palabrasLluvia.length)];
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
-        document.body.appendChild(heart);
-
-        setTimeout(() => {
-            heart.remove();
-        }, 5000);
-    }
-
-    setInterval(crearCorazon, 300);
-
-    // Crear corazón donde se haga clic
-    document.addEventListener("click", function(e) {
-        const heart = document.createElement("div");
-        heart.classList.add("heart");
+        heart.className = "heart-confetti";
         heart.innerText = "💙";
-        heart.style.left = e.clientX + "px";
-        heart.style.top = e.clientY + "px";
-        heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        heart.style.left = "50vw";
+        heart.style.top = "50vh";
+        
+        // Direcciones y rotaciones aleatorias
+        const tx = (Math.random() - 0.5) * 400 + "px";
+        const ty = (Math.random() - 0.5) * 400 + "px";
+        const tr = (Math.random() * 360) + "deg";
+        
+        heart.style.setProperty('--tx', tx);
+        heart.style.setProperty('--ty', ty);
+        heart.style.setProperty('--tr', tr);
+        
+        heart.style.animation = `heartBurst ${0.8 + Math.random()}s ease-out forwards`;
+        
         document.body.appendChild(heart);
-
-        setTimeout(() => {
-            heart.remove();
-        }, 5000);
-    });
-
-    // Lógica para desplegar las cartas (Acordeón)
-    var acc = document.getElementsByClassName("accordion");
-    for (var i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-            } else {
-                panel.style.display = "block";
-            }
-        });
+        setTimeout(() => heart.remove(), 2000);
     }
+}
 
-    // --- Lógica del Modal de Imágenes ---
-    var modal = document.getElementById("imageModal");
-    var modalImg = document.getElementById("img01");
-    var span = document.getElementsByClassName("close")[0];
-    var downloadBtn = document.getElementById("downloadBtn");
-
-    // Lógica para abrir el Zoom al hacer clic en las cartas (Frontal o Reverso)
-    var flipCards = document.querySelectorAll(".flip-card");
-    flipCards.forEach(card => {
-        card.addEventListener("click", function() {
-            var img = this.querySelector("img");
-            if (img) {
-                modal.style.display = "block";
-                modalImg.src = img.src;
-                downloadBtn.href = img.src;
-            }
-        });
-    });
-
-    // Cerrar el modal al hacer clic en (x) o fuera de la imagen
-    span.onclick = function() { modal.style.display = "none"; }
-    modal.onclick = function(event) {
-        if (event.target !== modalImg) {
-            modal.style.display = "none";
-        }
-    }
-
-    // --- FUNCIÓN MODO PRESENTACIÓN AUTOMÁTICA ---
-    function iniciarPresentacion() {
-        const cards = document.querySelectorAll('.flip-card');
-        
-        // Recorremos todas las cartas
-        cards.forEach((card, index) => {
-            // Calcular tiempo: cada carta tiene su turno cada 3 segundos
-            setTimeout(() => {
-                card.classList.add('flipped'); // Girar
-                // Reproducir sonido suave si existe
-                const audio = document.getElementById("flipSound");
-                if (audio) { audio.currentTime = 0; audio.play().catch(e=>{}); }
-            }, index * 3000); // 0s, 3s, 6s...
-
-            // Cerrar la carta un poco antes de que empiece la siguiente
-            setTimeout(() => {
-                card.classList.remove('flipped'); // Volver a girar
-            }, index * 3000 + 2500); // Se mantiene abierta 2.5 segundos
-        });
-    }
-
-    // --- Lógica para SUBIR y GUARDAR imágenes nuevas ---
+function mostrar(i){
+    const r = recuerdos[i];
+    document.getElementById("titulo").innerText = r.titulo;
+    document.getElementById("texto").innerText = r.texto;
     
-    // 1. Función principal que se activa al elegir una foto
-    function subirImagen(input, containerId, storageKey, textInputId) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            var noteText = document.getElementById(textInputId).value || "Nueva carta agregada 💙";
-            
-            reader.onload = function(e) {
-                const base64Data = e.target.result;
-                // Guardamos la imagen Y la nota en un objeto
-                const dataObj = { src: base64Data, note: noteText };
-
-                // Obtenemos el índice que tendrá esta nueva imagen
-                const existingData = JSON.parse(localStorage.getItem(storageKey)) || [];
-                const newIndex = existingData.length;
-
-                // Mostrarla en pantalla
-                agregarImagenDOM(dataObj, containerId, storageKey, newIndex);
-                // Guardarla en memoria
-                guardarEnStorage(storageKey, dataObj);
-                
-                // Limpiar el campo de texto después de subir
-                document.getElementById(textInputId).value = "";
-            }
-            
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // 2. Función para crear la imagen en la página (HTML)
-    function agregarImagenDOM(data, containerId, storageKey, index) {
-        const container = document.getElementById(containerId);
-        
-        // Creamos un envoltorio para agrupar imagen, nota y botón de borrar
-        const wrapper = document.createElement("div");
-        wrapper.className = "memory-wrapper";
-        
-        // Verificamos si es una carta antigua (solo imagen) o nueva (imagen + nota)
-        let imgSrc = (typeof data === 'object' && data.src) ? data.src : data;
-        let imgNote = (typeof data === 'object' && data.note) ? data.note : "Nueva carta agregada 💙";
-        let fechaHoy = new Date().toLocaleDateString();
-        
-        // Creamos la estructura HTML del Flip Card
-        const flipContainer = document.createElement("div");
-        flipContainer.className = "flip-card";
-        flipContainer.innerHTML = `
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    <img src="${imgSrc}" style="width:100%">
-                </div>
-                <div class="flip-card-back">
-                    "Un recuerdo eterno..." ✨<div class="click-hint">👆 Clic para ver</div>
-                </div>
-            </div>
-        `;
-        
-        // Añadimos el evento para abrir el modal (Zoom) AL CONTENEDOR FLIP completo
-        flipContainer.addEventListener("click", function() {
-            var modal = document.getElementById("imageModal");
-            var modalImg = document.getElementById("img01");
-            var downloadBtn = document.getElementById("downloadBtn");
-            modal.style.display = "block";
-            modalImg.src = imgSrc;
-            downloadBtn.href = imgSrc;
-        });
-
-        // Sonido al pasar el mouse (girar) para cartas NUEVAS
-        flipContainer.addEventListener("mouseenter", function() {
-            const audio = document.getElementById("flipSound");
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => {});
-            }
-        });
-
-        wrapper.appendChild(flipContainer);
-
-        // Si pasamos 'storageKey' e 'index', significa que es borrable (no es estática)
-        if (storageKey !== undefined && index !== undefined) {
-            const btnDelete = document.createElement("button");
-            btnDelete.className = "btn-delete-individual";
-            btnDelete.innerHTML = "✕";
-            btnDelete.title = "Borrar esta carta";
-            btnDelete.onclick = function() { borrarImagenIndividual(storageKey, index); };
-            wrapper.appendChild(btnDelete);
-        }
-        
-        // Añadir un pequeño texto debajo
-        const p = document.createElement("p");
-        p.innerHTML = "<i>" + imgNote + "</i>";
-        wrapper.appendChild(p);
-
-        container.appendChild(wrapper);
-    }
-
-    // 3. Guardar en LocalStorage del navegador
-    function guardarEnStorage(key, data) {
-        let images = JSON.parse(localStorage.getItem(key)) || [];
-        images.push(data);
-        localStorage.setItem(key, JSON.stringify(images));
-    }
-
-    // 5. Función para BORRAR UNA IMAGEN ESPECÍFICA
-    function borrarImagenIndividual(key, index) {
-        if (confirm("¿Quieres eliminar esta carta?")) {
-            let images = JSON.parse(localStorage.getItem(key)) || [];
-            images.splice(index, 1); // Elimina 1 elemento en la posición 'index'
-            localStorage.setItem(key, JSON.stringify(images));
-            location.reload(); // Recargamos la página para actualizar la vista
-        }
-    }
-
-    // 4. Cargar imágenes guardadas al iniciar la página
-    function cargarMemorias() {
-        const datosElla = JSON.parse(localStorage.getItem('key_ella')) || [];
-        datosElla.forEach((img, index) => agregarImagenDOM(img, 'container-ella', 'key_ella', index));
-
-        const datosEl = JSON.parse(localStorage.getItem('key_el')) || [];
-        datosEl.forEach((img, index) => agregarImagenDOM(img, 'container-el', 'key_el', index));
-    }
-
-    // Ejecutar carga de memorias
-    cargarMemorias();
-    cargarMensajesTexto(); // Cargamos también los chats
-
-    // --- Lógica para MENSAJES DE TEXTO (WhatsApp) ---
-    function agregarMensajeTexto(usuario) {
-        const inputId = "nuevo-mensaje-" + usuario;
-        const containerId = "whatsapp-container-" + usuario;
-        const storageKey = "whatsapp_msgs_" + usuario;
-
-        const inputMsg = document.getElementById(inputId);
-        const texto = inputMsg.value.trim();
-        
-        if (texto) {
-            const fecha = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const msgObj = { text: texto, date: fecha };
-            
-            // Guardar en LocalStorage
-            guardarEnStorage(storageKey, msgObj);
-            
-            // Obtener índice para poder borrarlo luego
-            const existingData = JSON.parse(localStorage.getItem(storageKey)) || [];
-            const index = existingData.length - 1; 
-            
-            renderizarMensaje(msgObj, index, containerId, storageKey);
-            
-            inputMsg.value = ""; // Limpiar campo
-        }
-    }
-
-    function renderizarMensaje(msgObj, index, containerId, storageKey) {
-        const container = document.getElementById(containerId);
-        
-        const bubble = document.createElement("div");
-        bubble.className = "chat-bubble";
-        bubble.innerHTML = `
-            ${msgObj.text.replace(/\n/g, "<br>")}
-            <span class="chat-date">${msgObj.date}</span>
-            <button class="btn-delete-individual" style="width: 20px; height: 20px; font-size: 10px; top: -5px; right: -5px;" onclick="borrarMensajeTexto('${storageKey}', ${index})">✕</button>
-        `;
-        
-        container.appendChild(bubble);
-        container.scrollTop = container.scrollHeight; // Bajar automáticamente
-    }
-
-    function borrarMensajeTexto(key, index) {
-        if (confirm("¿Borrar este mensaje?")) {
-            let msgs = JSON.parse(localStorage.getItem(key)) || [];
-            msgs.splice(index, 1);
-            localStorage.setItem(key, JSON.stringify(msgs));
-            location.reload(); 
-        }
-    }
-
-    function cargarMensajesTexto() {
-        const msgsPaola = JSON.parse(localStorage.getItem('whatsapp_msgs_paola')) || [];
-        msgsPaola.forEach((msg, index) => renderizarMensaje(msg, index, 'whatsapp-container-paola', 'whatsapp_msgs_paola'));
-
-        const msgsMike = JSON.parse(localStorage.getItem('whatsapp_msgs_mike')) || [];
-        msgsMike.forEach((msg, index) => renderizarMensaje(msg, index, 'whatsapp-container-mike', 'whatsapp_msgs_mike'));
-    }
-
-    // --- Efecto de Sonido Global para Botones ---
-    const clickSound = document.getElementById("clickSound");
+    // Mostrar el corazón latiendo solo si es Abril
+    const corazon = document.getElementById("corazon-abril");
+    corazon.style.display = r.titulo.includes("Abril") ? "block" : "none";
     
-    document.addEventListener("click", function(e) {
-        // Detectar si se hizo clic en un botón, acordeón, etiqueta de archivo o cierre
-        if (e.target.matches("button, .accordion, .custom-file-upload, .close, .download-btn") || e.target.closest("button")) {
-            clickSound.currentTime = 0; // Reiniciar audio para clics rápidos
-            clickSound.play().catch(err => console.log("Audio bloqueado por navegador hasta interactuar"));
-        }
+    const galeria = document.getElementById("galeria-imagenes");
+    galeria.innerHTML = ""; // Limpiar imágenes anteriores
+    
+    // Creamos una etiqueta <img> por cada ruta en el array
+    r.img.forEach(src => {
+        let img = document.createElement("img");
+        img.src = src;
+        galeria.appendChild(img);
     });
 
-    // Agregar sonido a las cartas que ya existen en el HTML (Estáticas)
-    document.querySelectorAll(".flip-card").forEach(card => {
-        card.addEventListener("mouseenter", () => {
-            const audio = document.getElementById("flipSound");
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => {});
-            }
-        });
-    });
+    document.getElementById("modal").style.display = "flex";
+    lanzarConfeti();
+}
 
-    // --- Lógica del Botón Volver Arriba ---
-    const btnTop = document.getElementById("btnTop");
+function mostrarCartaSol(){
+    document.getElementById("titulo").innerText = "Para mi princesita 💌";
+    document.getElementById("texto").innerText = "Gracias por alegrarme el día con tu hermosa voz y con tus hermosas cartas. Gracias simplemente por existir. Me gustas muchísimo y te amo con todo mi corazón, y espero que sigamos construyendo más planetas juntos en nuestra galaxia. 💙";
+    
+    const corazon = document.getElementById("corazon-abril");
+    if (corazon) corazon.style.display = "none"; // Ocultar el corazón de abril si existe
 
-    window.onscroll = function() {
-        // Mostrar botón si bajamos más de 300px
-        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-            btnTop.style.display = "block";
-        } else {
-            btnTop.style.display = "none";
-        }
-    };
+    const galeria = document.getElementById("galeria-imagenes");
+    galeria.innerHTML = ""; // Limpiar galería para la carta
+    
+    document.getElementById("modal").style.display = "flex";
+    lanzarConfeti();
+}
 
-    function subirArriba() {
-        window.scrollTo({top: 0, behavior: 'smooth'}); // Desplazamiento suave
+function cerrar(){
+    document.getElementById("modal").style.display = "none";
+}
+
+// 🎶 música
+function activarMusica(){
+    document.getElementById("musica").play();
+}
+
+// 🌠 cometas de frases
+const frases = ["mi amors", "patito", "princesita", "bella durmiente", "miki pelon", "bueni", "amiguis", "patito fresa", "principe fresa"];
+
+function crearCometa() {
+    const cometa = document.createElement("div");
+    cometa.className = "comet";
+    cometa.innerText = frases[Math.floor(Math.random() * frases.length)];
+
+    // Posición vertical inicial aleatoria
+    const startY = Math.random() * 70; 
+    cometa.style.top = startY + "vh";
+    cometa.style.left = "-100px";
+
+    const duracion = 6 + Math.random() * 6;
+    cometa.style.animation = `cometFlow ${duracion}s linear forwards`;
+
+    document.body.appendChild(cometa);
+
+    // Crear estela de chispas
+    const interval = setInterval(() => {
+        const rect = cometa.getBoundingClientRect();
+        if (rect.left > window.innerWidth || rect.right < 0) return;
+
+        const sparkle = document.createElement("div");
+        sparkle.className = "sparkle";
+        
+        // Posición y color aleatorio mágico
+        sparkle.style.left = rect.left + "px";
+        sparkle.style.top = (rect.top + rect.height / 2) + "px";
+        sparkle.style.background = `hsl(${Math.random() * 40 + 190}, 100%, 80%)`; // Tonos azules/cian
+        sparkle.style.boxShadow = `0 0 8px ${sparkle.style.background}`;
+        sparkle.style.animation = "sparkleFade 0.8s ease-out forwards";
+
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 800);
+    }, 60);
+
+    // Limpiar el elemento al terminar
+    setTimeout(() => {
+        clearInterval(interval);
+        cometa.remove();
+    }, duracion * 1000);
+}
+
+// Lanzar un cometa cada 4-8 segundos
+setInterval(crearCometa, 4000 + Math.random() * 4000);
+
+// ⏳ contador real
+let inicio = new Date("2026-01-31"); // CAMBIA ESTA FECHA
+
+function actualizarContador(){
+    let hoy = new Date();
+    let diff = hoy - inicio;
+
+    // Calcular total de meses
+    let meses = (hoy.getFullYear() - inicio.getFullYear()) * 12 + (hoy.getMonth() - inicio.getMonth());
+    if (hoy.getDate() < inicio.getDate()) {
+        meses--;
     }
 
-    // --- Lógica del Reproductor de Video Personalizado ---
-    const miVideo = document.getElementById("miVideo");
-    const vidBtn = document.getElementById("vidBtn");
-    const vidBar = document.getElementById("vidBar");
-    const muteBtn = document.getElementById("muteBtn");
+    let dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+    let horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    let minutos = Math.floor((diff / (1000 * 60)) % 60);
+    let segundos = Math.floor((diff / 1000) % 60);
 
-    miVideo.addEventListener("timeupdate", function() {
-        // Actualizar la barra de progreso mientras avanza el video
-        var value = (100 / miVideo.duration) * miVideo.currentTime;
-        vidBar.value = value;
-    });
+    document.getElementById("contador").innerText =
+        `${meses} meses | ${dias}d ${horas}h ${minutos}m ${segundos}s juntos 💙`;
+}
 
-    miVideo.addEventListener("ended", function() {
-        vidBtn.innerText = "▶️"; // Volver a poner Play al terminar
-    });
-
-    function playPauseVideo() {
-        if (miVideo.paused) {
-            miVideo.play();
-            vidBtn.innerText = "⏸️";
-        } else {
-            miVideo.pause();
-            vidBtn.innerText = "▶️";
-        }
-    }
-
-    function seekVideo() {
-        // Mover el video cuando tocas la barra
-        var time = miVideo.duration * (vidBar.value / 100);
-        miVideo.currentTime = time;
-    }
-
-    function muteVideo() {
-        if (miVideo.muted) {
-            miVideo.muted = false;
-            muteBtn.innerText = "🔊";
-        } else {
-            miVideo.muted = true;
-            muteBtn.innerText = "🔇";
-        }
-    }
+setInterval(actualizarContador, 1000);
 </script>
+
 </body>
 </html>
